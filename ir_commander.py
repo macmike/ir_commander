@@ -2,6 +2,7 @@
 
 import socket
 import time
+import subprocess
 
 if __name__ == '__main__':
     pass
@@ -36,15 +37,25 @@ def send_lightwave_command(acomm,description):
     msg = LW_MSG_START + acomm
     send_udp(msg,description)
     return
-    
-def reboot_Pi():
-    command = "/usr/bin/sudo /sbin/shutdown -r now"
-    import subprocess
-    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+
+def execCommand(acomm):
+    process = subprocess.Popen(acomm.split(), stdout=subprocess.PIPE)
     output = process.communicate()[0]
     print(output)
     return
+  
+    
+def reboot_Pi():
+    execCommand("/usr/bin/sudo /sbin/shutdown -r now")
+    return
 
+def turn_PS4_Off():
+    execCommand("/usr/bin/sudo ps4-waker standby")
+    return
+
+def turn_PS4_On():
+    execCommand("/usr/bin/sudo ps4-waker")
+    return
 
 #######################################
 ######## Message handling loop ########
@@ -62,19 +73,21 @@ while aCommand != "0":
     elif aCommand == "4":  
         send_lightwave_command("R2FmP2","Dim room")
     elif aCommand == "5": #low light for pause
-    	send_lightwave_command("R2D3FdP2","Main Sofas 5%")
-    	time.sleep(0.2)
+    	#send_lightwave_command("R2D3FdP2","Main Sofas 5%")
+    	#time.sleep(0.2)
     	send_lightwave_command("R2D4FdP2","Main Middle 5%")
     elif aCommand == "6":
-    	send_lightwave_command("R2D3F0","Main Sofas Off")
-    	time.sleep(0.2)
+    	#send_lightwave_command("R2D3F0","Main Sofas Off")
+    	#time.sleep(0.2)
     	send_lightwave_command("R2D4F0","Main Middle Off")
     elif aCommand == "7":
     	lock_light_changes = True
     elif aCommand == "8":
     	lock_light_changes = False
-    #elif aCommand == "101":
-    	#turn_PS4_On()
+    elif aCommand == "9":
+    	turn_PS4_On()
+    elif aCommand == "10":
+    	turn_PS4_Off()
     elif aCommand == "999":
     	reboot_Pi()
     elif aCommand == "register_lw": 
